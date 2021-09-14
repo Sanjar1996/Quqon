@@ -1,65 +1,57 @@
-###########
-# BUILDER #
-###########
+version: '2'
 
-FROM python:3.8 as builder
+services:
+  quqondb_prod:
+    container_name: quqondb_prod
+    restart: always  
+    image: postgres:12.2
+    environment:
+      POSTGRES_DB: db_quqon_prod
+      POSTGRES_USER: quqonuser_prod
+      POSTGRES_PASSWORD: quqonpass_prod
+    networks:
+      - quqon-network
+    volumes:
+        - quqondata:/var/lib/postgresql/quqondata/
+    
+  quqonweb_prod:
+    container_name: quqonweb_prod
+    restart: always  
+    build:
+      context: .
+      dockerfile: Dockerfile.prod
+    command: gunicorn config.wsgi:application --bind 0.0.0.0:2020
+    volumes:
+      - static_volume_quqon:/home/app/web/static
+      - media_volume_quqon:/home/app/web/media
+    networks:
+      - quqon-network
+    depends_on: 
+      - quqondb_prod
+    ports:
+      - "2020:2020"
+    env_file: 
+      - ./.env.prod
 
-WORKDIR /usr/src/app
+  quqonnginx:
+    container_name: quqon-nginx
+    restart: always
+    build: ./nginx
+    volumes:
+      - static_volume_quqon:/home/app/web/static
+      - media_volume_quqon:/home/app/web/media
+    ports:
+      - "4040:4040"
+    networks:
+      - quqon-network
+    depends_on:
+      - quqonweb_prod
+      
+volumes:
+  quqondata:
+  static_volume_quqon:
+  media_volume_quqon:
 
-ENV PYTHONUNBUFFERED 1
-ENV PYTHONDONTWRITEBYTECODE 1
-
-RUN apt-get update && apt-get -y install netcat
-
-COPY . /usr/src/app/
-RUN pip wheel --no-cache-dir --no-deps --wheel-dir /usr/src/app/wheels -r /usr/src/app/requirement.txt
-
-#########
-# FINAL #
-#########
-
-FROM python:3.8
-
-# create directory for the user
-RUN mkdir -p /home/app
-
-# create the appuser user in appuser group
-# RUN addgroup -S app && adduser -S app -G app
-ARG user=appuser
-ARG group=appuser
-ARG uid=1000
-ARG gid=1000
-RUN groupadd -g ${gid} ${group} && useradd -u ${uid} -g ${group} -s /bin/sh ${user}
-
-# create the appropriate directories
-ENV HOME=/home/app
-ENV APP_HOME=/home/app/web
-RUN mkdir $APP_HOME
-RUN mkdir $APP_HOME/static
-WORKDIR $APP_HOME
-
-
-# install dependencies
-RUN apt-get update && apt-get -y install netcat &&  apt-get -y install gettext && apt-get -y install nano
-COPY --from=builder /usr/src/app/wheels /wheels
-COPY --from=builder /usr/src/app/requirements.txt .
-RUN pip install --upgrade pip
-RUN pip install --no-cache /wheels/*
-
-# copy entrypoint-prod.sh
-COPY ./entrypoint.prod.sh $APP_HOME
-
-# copy project
-COPY . $APP_HOME
-
-# chown all the files to the app user
-RUN chown -R ${user}:${group} $APP_HOME
-
-# # change to the app user
-# USER ${user}
-
-# run entrypoint.prod.sh
-# ENTRYPOINT ["/home/app/web/entrypoint.prod.sh"]
-RUN django-admin compilemessages
-RUN python manage.py migrate
-RUN ["chmod", "+x", "/home/app/web/entrypoint.prod.sh"]
+networks:
+  quqon-network:
+    driver: bridge
