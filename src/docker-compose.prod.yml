@@ -20,7 +20,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.prod
-    command: gunicorn config.wsgi:application --bind 0.0.0.0:2020
+    command: gunicorn config.wsgi:application --bind 0.0.0.0:2424
     volumes:
       - static_volume_quqon:/home/app/web/static
       - media_volume_quqon:/home/app/web/media
@@ -29,7 +29,7 @@ services:
     depends_on: 
       - quqondb_prod
     ports:
-      - "2020:2020"
+      - "2424:2424"
     env_file: 
       - ./.env.prod
 
@@ -41,7 +41,7 @@ services:
       - static_volume_quqon:/home/app/web/static
       - media_volume_quqon:/home/app/web/media
     ports:
-      - "4040:4040"
+      - "4545:4545"
     networks:
       - quqon-network
     depends_on:
