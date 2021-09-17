@@ -70,7 +70,7 @@ class Newsmodel(models.Model):
   
 
 class NewsPrise(models.Model):
-    # title = models.CharField(max_length=50, blank= True)
+    title = models.CharField(max_length=50, blank= True)
     price = models.IntegerField()
     tarif = models.CharField(max_length=50)
     plan = models.CharField(max_length=100, blank=True)
