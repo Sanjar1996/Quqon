@@ -102,4 +102,6 @@ class NarhMaydon(models.Model):
     nomi = models.CharField(max_length=75)
     narx = models.IntegerField()
     tarif = models.CharField(max_length=75)
-    
+
+    def __str__(self):
+        return self.nomi
