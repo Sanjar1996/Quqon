@@ -69,14 +69,25 @@ class Newsmodel(models.Model):
         return self.title
   
 
-class NewsPrise(models.Model):
-    title = models.CharField(max_length=50, blank= True)
-    price = models.IntegerField()
-    tarif = models.CharField(max_length=50)
-    plan = models.CharField(max_length=100, blank=True)
+# class NewsPrise(models.Model):
+#     title = models.CharField(max_length=50, default="")
+#     price = models.IntegerField()
+#     tarif = models.CharField(max_length=50)
+#     plan = models.CharField(max_length=100, blank=True)
     
-    def __str__(self) -> str:
-        return self.title
+#     def __str__(self) -> str:
+#         return self.title
+
+
+
+# class Narh(models.Model):
+#     title = models.CharField(max_length=50)
+#     price = models.IntegerField()
+#     tarif = models.CharField(max_length=50)
+#     plan = models.CharField(max_length=100, blank=True)
+    
+    # def __str__(self) -> str:
+    #     return self.title
 
 class XodimModel(models.Model):
     ism= models.CharField(max_length=250)
@@ -86,3 +97,9 @@ class XodimModel(models.Model):
 
     def __str__(self) -> str:
         return self.ism
+
+class NarhMaydon(models.Model):
+    nomi = models.CharField(max_length=75)
+    narx = models.IntegerField()
+    tarif = models.CharField(max_length=75)
+    

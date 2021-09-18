@@ -8,10 +8,10 @@ class NewsAdmin(admin.ModelAdmin):
 
 admin.site.register(HomeCaruselModel)
 admin.site.register(FutureModels)
+admin.site.register(NarhMaydon)
 admin.site.register(SubMenuModels)
 admin.site.register(MainSiteModels)
 admin.site.register(About)
 admin.site.register(AboutMaydon)
 admin.site.register(Newsmodel, NewsAdmin)
-admin.site.register(NewsPrise)
 admin.site.register(XodimModel)

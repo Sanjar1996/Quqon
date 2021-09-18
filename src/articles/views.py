@@ -39,13 +39,15 @@ def aboutview(request):
 
 def newsview(request):
     news_model = Newsmodel.objects.order_by('-date')
-    news_price = NewsPrise.objects.all()
+    narh_maydon = NarhMaydon.objects.all()
+    # narh = Narh.objects.all()
     paginator = Paginator(news_model, 9)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
     context = {
         'news_model': news_model,
-        'news_price': news_price,
+        'narh_maydon': narh_maydon,
+        # 'narh': narh,
         'page_obj': page_obj
     }
     return render(request, 'news.html', context)
